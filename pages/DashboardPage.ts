@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import {BasePage} from "./BasePage"
-import {DASHBOARD_LOCATOR} from "../constants/dashboardSelector"
+import {DASHBOARD_LOCATOR} from "../constants/dashboard-selector"
 import { getSelector } from "../utility/init";
 
 interface DashboardSelector{

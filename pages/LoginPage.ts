@@ -1,6 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 import {BasePage} from "./BasePage"
-import{LOGIN_LOCATOR} from "../constants/LoginSelector"
+import{LOGIN_LOCATOR} from "../constants/login-selector"
 import { getSelector } from "../utility/init";
 
 interface Account{
