@@ -6,15 +6,19 @@
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0"
   },
-  "scripts": {
-"dev": "node --env-file=env/.env.dev ./node_modules/@playwright/test/cli.js test",
-"qa": "node --env-file=env/.env.qa ./node_modules/@playwright/test/cli.js test",
-"test:setup": "npm run dev -- --project=globalSetup && npm run qa -- --project=globalSetup",
+"scripts": {
+  "pw:dev": "node --env-file=env/.env.dev ./node_modules/@playwright/test/cli.js test",
+  "pw:qa": "node --env-file=env/.env.qa ./node_modules/@playwright/test/cli.js test",
 
-"test": "npm run dev -- --project=chromium --no-deps && npm run qa -- --project=chromium --no-deps",
-"test:dev": "npm run dev -- -g @dev",
-"test:qa": "npm run qa -- -g @qa",
-"test:all": "npm run test:setup && npm run test",
+  "test:dev": "npm run pw:dev -- --project=globalSetup && npm run pw:dev",
+  "test:dev:fast": "npm run pw:dev -- --no-deps",
+  "test:dev:tag": "npm run pw:dev -- --project=globalSetup && npm run pw:dev -- -g @dev",
+
+  "test:qa": "npm run pw:qa -- --project=globalSetup && npm run pw:qa",
+  "test:qa:fast": "npm run pw:qa -- --no-deps",
+  "test:qa:tag": "npm run pw:qa -- --project=globalSetup && npm run pw:qa -- -g @qa",
+
+  "test:all": "npm run test:dev && npm run test:qa",
 
 "view:dev": "npx playwright show-report playwright-report/dev",
 "view:qa": "npx playwright show-report playwright-report/qa"
