@@ -40,15 +40,15 @@ jobs:
         FILE_PATH: env/.env.${{ github.event.inputs.environment || 'dev' }}
       run: |
         mkdir -p env
-        echo "ENV_NAME=${{ github.event.inputs.environment || 'dev' }}" >> FILE_PATH
-        echo "BASE_URL=${{ secrets.BASE_URL }}" >> FILE_PATH
-        echo "ADMIN_USER=${{ secrets.ADMIN_USER }}" >> FILE_PATH
-        echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> FILE_PATH
+        echo "ENV_NAME=${{ github.event.inputs.environment || 'dev' }}" > $FILE_PATH
+        echo "BASE_URL=${{ secrets.BASE_URL }}" >> $FILE_PATH
+        echo "ADMIN_USER=${{ secrets.ADMIN_USER }}" >> $FILE_PATH
+        echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> $FILE_PATH
     - name: Run Playwright tests
       # Sử dụng đúng lệnh npm script bạn đã viết trong package.json
       run: npm run test:all
       env:
-        ENV: ${{ github.event.inputs.environment || 'dev' }}
+        ENV_NAME: ${{ github.event.inputs.environment || 'dev' }}
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
