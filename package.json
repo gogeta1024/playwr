@@ -6,5 +6,17 @@
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0"
   },
-  "scripts": {}
+  "scripts": {
+"dev": "node --env-file=env/.env.dev ./node_modules/@playwright/test/cli.js test",
+"qa": "node --env-file=env/.env.qa ./node_modules/@playwright/test/cli.js test",
+"test:setup": "npm run dev -- --project=globalSetup && npm run qa -- --project=globalSetup",
+
+"test": "npm run dev -- --project=chromium --no-deps && npm run qa -- --project=chromium --no-deps",
+"test:dev": "npm run dev -- -g @dev",
+"test:qa": "npm run qa -- -g @qa",
+"test:all": "npm run test:setup && npm run test",
+
+"view:dev": "npx playwright show-report playwright-report/dev",
+"view:qa": "npx playwright show-report playwright-report/qa"
+  }
 }

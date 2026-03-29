@@ -4,10 +4,26 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  
+    # Cho phép bấm nút chạy thủ công và chọn môi trường
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Chọn môi trường để chạy test'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - qa  
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    
+    # Kết nối với Environment trên GitHub (để dùng Secrets)
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -17,11 +33,25 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
+      # Bước quan trọng: Tạo file .env từ GitHub Secrets trước khi chạy
+    - name: Create .env file
+      env:
+        FILE_PATH: env/.env.${{ github.event.inputs.environment || 'dev' }}
+      run: |
+        mkdir -p env
+        echo "ENV_NAME=${{ github.event.inputs.environment || 'dev' }}" >> FILE_PATH
+        echo "BASE_URL=${{ secrets.BASE_URL }}" >> FILE_PATH
+        echo "ADMIN_USER=${{ secrets.ADMIN_USER }}" >> FILE_PATH
+        echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> FILE_PATH
     - name: Run Playwright tests
-      run: npx playwright test
+      # Sử dụng đúng lệnh npm script bạn đã viết trong package.json
+      run: npm run test:all
+      env:
+        ENV: ${{ github.event.inputs.environment || 'dev' }}
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report
+        name: playwright-report-${{ github.event.inputs.environment || 'dev' }}
         path: playwright-report/
         retention-days: 30
