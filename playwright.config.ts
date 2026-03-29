@@ -38,6 +38,11 @@ reporter: 'html',
 use: {
 /* Base URL to use in actions like `await page.goto('')`. */
 baseURL: process.env.BASE_URL,
+<<<<<<< HEAD
+=======
+// File lưu session sẽ nằm trong thư mục auth/ để gọn gàng
+storageState: `playwright/.auth/${process.env.ENV_NAME}.json`,
+>>>>>>> b23047a6d8528903555b9b7ecfc9369eb59faae6
 
 /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 trace: 'on-first-retry',
@@ -49,6 +54,7 @@ projects: [
 {
 name:'globalSetup',
 testMatch:'tests/auth/global-setup.ts',
+<<<<<<< HEAD
 
 },
 
@@ -94,6 +100,48 @@ use: { ...devices['Desktop Safari'] },
 // },
 ],
 
+=======
+},
+{
+name: 'chromium',
+use: { ...devices['Desktop Chrome'] , baseURL: process.env.BASE_URL},
+dependencies:['globalSetup']
+},
+
+/*
+{
+name: 'firefox',
+use: { ...devices['Desktop Firefox'] },
+},
+
+{
+name: 'webkit',
+use: { ...devices['Desktop Safari'] },
+},
+*/
+
+/* Test against mobile viewports. */
+// {
+// name: 'Mobile Chrome',
+// use: { ...devices['Pixel 5'] },
+// },
+// {
+// name: 'Mobile Safari',
+// use: { ...devices['iPhone 12'] },
+// },
+
+/* Test against branded browsers. */
+// {
+// name: 'Microsoft Edge',
+// use: { ...devices['Desktop Edge'], channel: 'msedge' },
+// },
+// {
+// name: 'Google Chrome',
+// use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+// },
+],
+
+>>>>>>> b23047a6d8528903555b9b7ecfc9369eb59faae6
 /* Run your local dev server before starting the tests */
 // webServer: {
 // command: 'npm run start',
