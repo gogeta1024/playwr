@@ -60,9 +60,9 @@ jobs:
       run: |
           curl -L https://fly.io/install.sh | sh
           echo "$HOME/.fly/bin" >> $GITHUB_PATH
-          
+
     - name: Start Fly.io server
-      run: flyctl machines start -a ${{ secrets.FLY_APP }} --yes
+      run: flyctl machines start 6836671a1130d8
         
     #  Decode SSH key (dùng chung cho dev/qa)
     # =========================
