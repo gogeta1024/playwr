@@ -56,7 +56,11 @@ jobs:
         path: playwright-report/
         retention-days: 30
 
-        #  Decode SSH key (dùng chung cho dev/qa)
+    - name: Start Fly.io machine
+      run: |
+        flyctl machines start -a ${{ secrets.FLY_APP }} --yes
+        
+    #  Decode SSH key (dùng chung cho dev/qa)
     # =========================
     - name: Decode Fly.io SSH key
       run: |
