@@ -79,5 +79,5 @@ jobs:
         username: root
         port: 22
         ssh_private_key: fly_github
-        local_path: "upload-result/*"
-        remote_path: "/data/upload-result/"
+        local_path: "upload-results"
+        remote_path: "/data/upload-results/"
