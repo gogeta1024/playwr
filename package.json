@@ -4,23 +4,19 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
-    "@types/node": "^25.5.0"
+    "@types/node": "^25.5.2"
   },
-"scripts": {
-  "pw:dev": "node --env-file=env/.env.dev ./node_modules/@playwright/test/cli.js test",
-  "pw:qa": "node --env-file=env/.env.qa ./node_modules/@playwright/test/cli.js test",
-
-  "test:dev": "npm run pw:dev -- --project=globalSetup && npm run pw:dev",
-  "test:dev:fast": "npm run pw:dev -- --no-deps",
-  "test:dev:tag": "npm run pw:dev -- --project=globalSetup && npm run pw:dev -- -g @dev",
-
-  "test:qa": "npm run pw:qa -- --project=globalSetup && npm run pw:qa",
-  "test:qa:fast": "npm run pw:qa -- --no-deps",
-  "test:qa:tag": "npm run pw:qa -- --project=globalSetup && npm run pw:qa -- -g @qa",
-
-  "test:all": "npm run test:dev && npm run test:qa",
-
-"view:dev": "npx playwright show-report playwright-report/dev",
-"view:qa": "npx playwright show-report playwright-report/qa"
+  "scripts": {
+    "pw:dev": "node --env-file=env/.env.dev ./node_modules/@playwright/test/cli.js test",
+    "pw:qa": "node --env-file=env/.env.qa ./node_modules/@playwright/test/cli.js test",
+    "test:dev": "npm run pw:dev",
+    "test:dev:fast": "npm run pw:dev -- --project=chromium --no-deps",
+    "test:dev:tag": "npm run pw:dev -- -g @dev",
+    "test:qa": "npm run pw:qa",
+    "test:qa:fast": "npm run pw:qa -- --project=chromium",
+    "test:qa:tag": "npm run pw:qa -- --project=chromium -g @qa",
+    "test:all": "npm run test:dev && npm run test:qa",
+    "view:dev": "npx playwright show-report playwright-report/dev",
+    "view:qa": "npx playwright show-report playwright-report/qa"
   }
 }

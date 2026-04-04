@@ -1,6 +1,6 @@
-import { test as setup,expect } from '../../fixtures/my-fixtures';
-import{initPage} from '../../utility/init'
-import { getRandom } from '../../utility/init';
+import { test as setup,expect } from '../fixtures/my-fixtures';
+import{initPage} from '../utility/init'
+import { getRandom } from '../utility/init';
 
 setup('login and save session', async ({loginPage,page}) => {
 //const loginPage = await initPage(LoginPage,page) ko dung nua

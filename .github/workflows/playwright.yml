@@ -55,3 +55,25 @@ jobs:
         name: playwright-report-${{ github.event.inputs.environment || 'dev' }}
         path: playwright-report/
         retention-days: 30
+
+        # === Decode SSH Key ===
+    - name: Decode Fly.io SSH key
+      run: |
+        echo "${{ secrets.FLY_SSH_KEY }}" | base64 -d > fly_github
+        chmod 600 fly_github
+
+    - name: Decode Fly.io Cert (optional)
+      run: |
+        echo "${{ secrets.FLY_SSH_CERT }}" | base64 -d > fly_github_cert
+        chmod 600 fly_github_cert
+
+    # === Upload folder upload-result ===
+    - name: Upload upload-result to Fly.io
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      with:
+        server: "${{ secrets.FLY_APP }}.fly.dev"
+        username: root
+        port: 22
+        ssh_private_key: fly_github
+        local_path: "upload-result/*"
+        remote_path: "/data/upload-result/"

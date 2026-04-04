@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import test from 'node:test';
+import * as fs from 'fs'
 /*import dotenv from 'dotenv'
 import path from 'path'
 
@@ -23,7 +23,6 @@ dotenv.config({path:path.resolve(__dirname,envPath)})
 * See https://playwright.dev/docs/test-configuration.
 */
 export default defineConfig({
-testDir: './tests',
 /* Run tests in files in parallel */
 fullyParallel: true,
 /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -33,7 +32,11 @@ retries: process.env.CI ? 2 : 0,
 /* Opt out of parallel tests on CI. */
 workers: process.env.CI ? 1 : undefined,
 /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-reporter: 'html',
+reporter: [['html'],
+['list'],
+['./lib/FileReporter.ts']
+],
+
 /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 use: {
 /* Base URL to use in actions like `await page.goto('')`. */
@@ -41,24 +44,25 @@ baseURL: process.env.BASE_URL,
 
 /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 trace: 'on-first-retry',
-screenshot: 'only-on-failure',
-//video: 'retain-on-failure',
+screenshot: 'on',
+video: 'off',
 },
 /* Configure projects for major browsers */
 projects: [
 {
 name:'globalSetup',
-testMatch:'tests/auth/global-setup.ts',
-
+// QUAN TRỌNG: Ghi đè testDir cho riêng project này
+testDir: './auth',
+testMatch:'global-setup.ts',
 },
-
 {
 name: 'chromium',
-use: { ...devices['Desktop Chrome'] , baseURL: process.env.BASE_URL,
-    // File lưu session sẽ nằm trong thư mục auth/ để gọn gàng
-storageState: `playwright/.auth/${process.env.ENV_NAME}.json`,
+testDir: './tests',
+use: { ...devices['Desktop Chrome'],
+// File lưu session sẽ nằm trong thư mục env/ để gọn gàng
+storageState: fs.existsSync(`playwright/.auth/${process.env.ENV_NAME}.json`)?`playwright/.auth/${process.env.ENV_NAME}.json`:{cookies:[],origins:[]},
 },
-dependencies:['globalSetup']
+//dependencies:['globalSetup']
 },
 
 /*
