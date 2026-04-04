@@ -56,19 +56,23 @@ jobs:
         path: playwright-report/
         retention-days: 30
 
-        # === Decode SSH Key ===
+        #  Decode SSH key (dùng chung cho dev/qa)
+    # =========================
     - name: Decode Fly.io SSH key
       run: |
         echo "${{ secrets.FLY_SSH_KEY }}" | base64 -d > fly_github
         chmod 600 fly_github
 
-    - name: Decode Fly.io Cert (optional)
+    - name: Decode Fly.io SSH cert
       run: |
         echo "${{ secrets.FLY_SSH_CERT }}" | base64 -d > fly_github_cert
         chmod 600 fly_github_cert
 
-    # === Upload folder upload-result ===
+    # =========================
+    #  Upload folder upload-result lên Fly.io
+    # =========================
     - name: Upload upload-result to Fly.io
+      if: always()    # <-- Quan trọng: chạy kể cả khi test FAIL
       uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
         server: "${{ secrets.FLY_APP }}.fly.dev"
