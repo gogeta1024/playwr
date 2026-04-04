@@ -56,9 +56,13 @@ jobs:
         path: playwright-report/
         retention-days: 30
 
-    - name: Start Fly.io machine
+    - name: Install flyctl
       run: |
-        flyctl machines start -a ${{ secrets.FLY_APP }} --yes
+          curl -L https://fly.io/install.sh | sh
+          echo "$HOME/.fly/bin" >> $GITHUB_PATH
+          
+    - name: Start Fly.io server
+      run: flyctl machines start -a ${{ secrets.FLY_APP }} --yes
         
     #  Decode SSH key (dùng chung cho dev/qa)
     # =========================
