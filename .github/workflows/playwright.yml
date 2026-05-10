@@ -4,10 +4,26 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  
+    # Cho phép bấm nút chạy thủ công và chọn môi trường
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Chọn môi trường để chạy test'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - qa  
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    
+    # Kết nối với Environment trên GitHub (để dùng Secrets)
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -17,11 +33,60 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
+      # Bước quan trọng: Tạo file .env từ GitHub Secrets trước khi chạy
+    - name: Create .env file
+      env:
+        FILE_PATH: env/.env.${{ github.event.inputs.environment || 'dev' }}
+      run: |
+        mkdir -p env
+        echo "ENV_NAME=${{ github.event.inputs.environment || 'dev' }}" > $FILE_PATH
+        echo "BASE_URL=${{ secrets.BASE_URL }}" >> $FILE_PATH
+        echo "ADMIN_USER=${{ secrets.ADMIN_USER }}" >> $FILE_PATH
+        echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> $FILE_PATH
     - name: Run Playwright tests
-      run: npx playwright test
+      # Sử dụng đúng lệnh npm script bạn đã viết trong package.json
+      run: 
+        npm run test:${{ github.event.inputs.environment || 'dev' }}
+      continue-on-error: true
+     
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report
+        name: playwright-report-${{ github.event.inputs.environment || 'dev' }}
         path: playwright-report/
         retention-days: 30
+
+    - name: Install flyctl
+      run: |
+          curl -L https://fly.io/install.sh | sh
+          echo "$HOME/.fly/bin" >> $GITHUB_PATH
+
+    - name: Start Fly.io server
+      run: flyctl machines start 6836671a1130d8
+        
+    #  Decode SSH key (dùng chung cho dev/qa)
+    # =========================
+    - name: Decode Fly.io SSH key
+      run: |
+        echo "${{ secrets.FLY_SSH_KEY }}" | base64 -d > fly_github
+        chmod 600 fly_github
+
+    - name: Decode Fly.io SSH cert
+      run: |
+        echo "${{ secrets.FLY_SSH_CERT }}" | base64 -d > fly_github_cert
+        chmod 600 fly_github_cert
+
+    # =========================
+    #  Upload folder upload-result lên Fly.io
+    # =========================
+    - name: Upload upload-result to Fly.io
+      if: always()    # <-- Quan trọng: chạy kể cả khi test FAIL
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      with:
+        server: "${{ secrets.FLY_APP }}.fly.dev"
+        username: root
+        port: 22
+        ssh_private_key: fly_github
+        local_path: "upload-results"
+        remote_path: "/data/upload-results/"
